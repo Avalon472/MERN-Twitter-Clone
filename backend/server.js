@@ -23,7 +23,7 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 //Middleware
-app.use(express.json());
+app.use(express.json({ limit: "5mb" })); //Default limit is 100kb
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
