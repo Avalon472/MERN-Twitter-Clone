@@ -160,8 +160,8 @@ export const commentOnPost = async (req, res) => {
     const comment = { user: userId, text: text };
     post.comments.push(comment);
     await post.save();
-
-    res.status(200).json(post);
+    const commentsList = post.comments;
+    res.status(200).json(commentsList);
   } catch (error) {
     console.log("Error in the commentOnPost method", error);
     res.status(500).json({ error: "Internal server error" });
@@ -183,7 +183,12 @@ export const likeUnlikePost = async (req, res) => {
       //Remove like from post and post from user's liked posts~
       await Post.updateOne({ _id: postId }, { $pull: { likes: userId } });
       await User.updateOne({ _id: userId }, { $pull: { likedPosts: postId } });
-      res.status(200).json({ message: "Post unliked successfully" });
+
+      //Remove user id from likes array
+      const updatedLikes = post.likes.filter(
+        (id) => id.toString() !== userId.toString(),
+      );
+      res.status(200).json(updatedLikes);
     } else {
       post.likes.push(userId);
       await User.updateOne({ _id: userId }, { $push: { likedPosts: postId } });
@@ -196,7 +201,8 @@ export const likeUnlikePost = async (req, res) => {
       });
       await notification.save();
 
-      res.status(200).json({ message: "Post liked successfully" });
+      const updatedLikes = post.likes;
+      res.status(200).json(updatedLikes);
     }
   } catch (error) {
     console.log("Error in the likeUnlikePost method", error);
