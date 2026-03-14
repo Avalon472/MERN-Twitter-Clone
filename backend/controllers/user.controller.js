@@ -104,7 +104,7 @@ export const updateUser = async (req, res) => {
 
   try {
     let user = await User.findById(userId);
-    if (!user) return res.status(404).json({ message: "User not found" });
+    if (!user) return res.status(404).json({ error: "User not found" });
 
     if (
       (!newPassword && currentPassword) ||
@@ -112,19 +112,17 @@ export const updateUser = async (req, res) => {
     ) {
       return res
         .status(400)
-        .json({ message: "Please provide both current and new password" });
+        .json({ error: "Please provide both current and new password" });
     }
 
     if (newPassword && currentPassword) {
       const isMatch = await bcrypt.compare(currentPassword, user.password);
       if (!isMatch)
-        return res
-          .status(400)
-          .json({ message: "Current password is incorrect" });
+        return res.status(400).json({ error: "Current password is incorrect" });
       if (newPassword.length < 6)
         return res
           .status(400)
-          .json({ message: "New password does not meet requirements" });
+          .json({ error: "New password does not meet requirements" });
 
       const salt = await bcrypt.genSalt(10);
       user.password = await bcrypt.hash(newPassword, salt);
@@ -145,11 +143,11 @@ export const updateUser = async (req, res) => {
     if (coverImg) {
       if (user.coverImg) {
         await cloudinary.uploader.destroy(
-          user.profileImg.split("/").pop().split(".")[0],
+          user.coverImg.split("/").pop().split(".")[0],
         );
       }
       const uploadResponse = await cloudinary.uploader.upload(coverImg);
-      profileImg = uploadResponse.secure_url;
+      coverImg = uploadResponse.secure_url;
     }
 
     //Setting user fields with provided or fallback info
