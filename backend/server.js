@@ -30,7 +30,7 @@ app.use(cookieParser());
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/posts", postRoutes);
-app.use("/api/notificatons", notificationRoutes);
+app.use("/api/notifications", notificationRoutes);
 
 //Behavior of server once it's spun up
 app.listen(PORT, () => {
